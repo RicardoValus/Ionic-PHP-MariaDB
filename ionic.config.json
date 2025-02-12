@@ -1,0 +1,7 @@
+{
+  "name": "IonicPhpMariadb",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

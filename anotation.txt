@@ -1,0 +1,257 @@
+// Frontend: Ionic Standalone
+// Instale o Ionic caso ainda não tenha
+// npm install -g @ionic/cli
+
+// Crie o projeto
+// ionic start myApp blank --type=angular --no-deps
+
+// Entre na pasta do projeto
+// cd myApp
+
+// Instale Axios para requisições HTTP
+// npm install axios
+
+// Substitua o código do app.component.ts pelo seguinte:
+
+import { Component } from '@angular/core';
+import axios from 'axios';
+
+@Component({
+  selector: 'app-root',
+  template: `
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Usuários</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-input [(ngModel)]="nome" placeholder="Nome"></ion-input>
+      <ion-button (click)="adicionarUsuario()">Adicionar</ion-button>
+      <ion-list>
+        <ion-item *ngFor="let usuario of usuarios">
+          {{ usuario.nome }}
+          <ion-button (click)="editarUsuario(usuario)">Editar</ion-button>
+          <ion-button (click)="deletarUsuario(usuario.id)">Excluir</ion-button>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  `,
+})
+export class AppComponent {
+  nome: string = '';
+  usuarios: any[] = [];
+  usuarioEditando: any = null;
+
+  constructor() {
+    this.carregarUsuarios();
+  }
+
+  async carregarUsuarios() {
+    const resposta = await axios.get('http://localhost/backend/listar.php');
+    this.usuarios = resposta.data;
+  }
+
+  async adicionarUsuario() {
+    if (this.usuarioEditando) {
+      await axios.post('http://localhost/backend/editar.php', { id: this.usuarioEditando.id, nome: this.nome });
+      this.usuarioEditando = null;
+    } else {
+      await axios.post('http://localhost/backend/adicionar.php', { nome: this.nome });
+    }
+    this.nome = '';
+    this.carregarUsuarios();
+  }
+
+  editarUsuario(usuario: any) {
+    this.nome = usuario.nome;
+    this.usuarioEditando = usuario;
+  }
+
+  async deletarUsuario(id: number) {
+    await axios.post('http://localhost/backend/deletar.php', { id });
+    this.carregarUsuarios();
+  }
+}
+
+__________________________________________________________________________________________________________________________________________________________________________
+
+
+No CMD:
+📌 1. Instalando MariaDB no Debian
+
+MariaDB é um banco de dados relacional compatível com MySQL.
+Passos para instalar e configurar o MariaDB
+
+    Atualize os pacotes
+
+sudo apt update && sudo apt upgrade -y
+
+Instale o MariaDB Server
+
+sudo apt install mariadb-server -y
+
+Inicie e habilite o serviço do MariaDB
+
+sudo systemctl start mariadb
+sudo systemctl enable mariadb
+
+Execute a configuração inicial
+
+sudo mysql_secure_installation
+
+    Configure a senha do root.
+    Responda Y para remover usuários anônimos e desativar acessos remotos.
+
+Acesse o MariaDB
+
+sudo mysql -u root -p
+
+Crie o banco de dados e usuário
+
+CREATE DATABASE myAppDB;
+CREATE USER 'usuario'@'localhost' IDENTIFIED BY 'senha123';
+GRANT ALL PRIVILEGES ON myAppDB.* TO 'usuario'@'localhost';
+FLUSH PRIVILEGES;
+
+USE myAppDB;
+
+📌 1. Criar a tabela usuarios
+
+Dentro do MariaDB, execute este comando para criar a tabela:
+
+CREATE TABLE usuarios (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(100) NOT NULL
+);
+
+📌 4. Listar todos os registros de uma tabela
+
+Para visualizar todos os usuários cadastrados:
+
+SELECT * FROM usuarios;
+
+Exemplo de saída:
+
++----+--------+
+| id | nome   |
++----+--------+
+| 1  | João   |
+| 2  | Maria  |
+| 3  | Pedro  |
++----+--------+
+
+EXIT;
+
+__________________________________________________________________________________________________________________________________________________________________________
+
+
+📌 1. Acessar o MariaDB
+
+Antes de listar os dados, acesse o MariaDB pelo terminal:
+
+sudo mysql -u root -p
+
+(Digite a senha do root quando solicitado.)
+
+Se você criou um usuário específico para seu banco de dados, acesse com:
+
+mysql -u usuario -p
+
+Agora, selecione o banco de dados:
+
+USE myAppDB;
+
+📌 2. Listar as tabelas do banco
+
+Para ver todas as tabelas dentro do banco de dados:
+
+SHOW TABLES;
+
+Se você criou uma tabela chamada usuarios, ela aparecerá na lista.
+
+📌 3. Ver a estrutura de uma tabela
+
+Para visualizar as colunas e tipos de dados da tabela:
+
+DESCRIBE usuarios;
+
+ou
+
+SHOW COLUMNS FROM usuarios;
+
+Isso mostrará algo como:
+
++-------+--------------+------+-----+---------+----------------+
+| Field | Type        | Null | Key | Default | Extra          |
++-------+--------------+------+-----+---------+----------------+
+| id    | int(11)     | NO   | PRI | NULL    | auto_increment |
+| nome  | varchar(100)| NO   |     | NULL    |                |
++-------+--------------+------+-----+---------+----------------+
+
+📌 4. Listar todos os registros de uma tabela
+
+Para visualizar todos os usuários cadastrados:
+
+SELECT * FROM usuarios;
+
+Exemplo de saída:
+
++----+--------+
+| id | nome   |
++----+--------+
+| 1  | João   |
+| 2  | Maria  |
+| 3  | Pedro  |
++----+--------+
+
+📌 5. Filtrar informações
+
+Listar um usuário específico:
+
+SELECT * FROM usuarios WHERE nome = 'Maria';
+
+Contar quantos usuários estão cadastrados:
+
+SELECT COUNT(*) FROM usuarios;
+
+Ordenar os usuários por nome:
+
+SELECT * FROM usuarios ORDER BY nome ASC;
+
+📌 6. Listar bancos de dados disponíveis
+
+Caso queira verificar todos os bancos de dados criados no MariaDB:
+
+SHOW DATABASES;
+
+__________________________________________________________________________________________________________________________________________________________________________
+
+
+📌 2. Instalando o PHP e Configurando o Servidor
+
+O PHP será usado para criar o backend.
+Instalar o PHP e extensões necessárias
+
+    Instale o PHP e extensões para MariaDB
+
+sudo apt install php php-mysqli php-json php-curl php-cli -y
+
+Verifique a versão do PHP
+
+php -v
+
+Crie uma pasta para o backend
+
+mkdir backend && cd backend
+
+Crie os arquivos do backend
+
+touch conexao.php listar.php adicionar.php editar.php deletar.php
+
+Adicione os códigos PHP que enviei anteriormente (está no projeto) nos respectivos arquivos.
+
+Inicie o servidor PHP
+
+php -S localhost:8000
+
+    O backend estará rodando em http://localhost:8000.
